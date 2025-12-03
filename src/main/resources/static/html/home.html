@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook</title>
+    <link rel="stylesheet" href="../css/home.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="/html/home.html" class="logo">f</a>
+                <div class="search-box">
+                    <span>🔍</span>
+                    <input type="text" placeholder="Tìm kiếm trên Facebook">
+                </div>
+            </div>
+            
+            <div class="header-center">
+                <div class="nav-icon active">🏠</div>
+                <div class="nav-icon">👥</div>
+                <div class="nav-icon">📺</div>
+                <div class="nav-icon">🏪</div>
+                <div class="nav-icon">🎮</div>
+            </div>
+            
+            <div class="header-right">
+                <div class="icon-button">➕</div>
+                <div class="icon-button">💬</div>
+                <div class="icon-button">🔔</div>
+                <div style="position: relative;">
+                    <div class="user-avatar" id="userAvatar" onclick="toggleDropdown()">U</div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <div class="dropdown-user">
+                                <div class="dropdown-avatar" id="dropdownAvatar">U</div>
+                                <div class="dropdown-user-info">
+                                    <div class="dropdown-username" id="dropdownUsername">User</div>
+                                    <div class="dropdown-see-profile">Xem trang cá nhân của bạn</div>
+                                </div>
+                            </div>
+                        </div>
+                                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" onclick="openProfilePictureUpload()">
+                            <div class="dropdown-icon">📷</div>
+                            <div class="dropdown-text">
+                                <div class="dropdown-title">Đổi ảnh đại diện</div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-item" onclick="logout()">
+                            <div class="dropdown-icon">🚪</div>
+                            <div class="dropdown-text">
+                                <div class="dropdown-title">Đăng xuất</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Left Sidebar -->
+        <div class="left-sidebar">
+            <div class="sidebar-item">
+                <div class="user-avatar" id="sidebarAvatar">U</div>
+                <span id="sidebarUsername">User</span>
+            </div>
+            <div class="sidebar-item">
+                <div class="sidebar-icon">👥</div>
+                <span>Bạn bè</span>
+            </div>
+            <div class="sidebar-item">
+                <div class="sidebar-icon">⏰</div>
+                <span>Kỷ niệm</span>
+            </div>
+            <div class="sidebar-item">
+                <div class="sidebar-icon">💾</div>
+                <span>Đã lưu</span>
+            </div>
+            <div class="sidebar-item">
+                <div class="sidebar-icon">👥</div>
+                <span>Nhóm</span>
+            </div>
+            <div class="sidebar-item">
+                <div class="sidebar-icon">📺</div>
+                <span>Video</span>
+            </div>
+            <div class="sidebar-item">
+                <div class="sidebar-icon">🏪</div>
+                <span>Marketplace</span>
+            </div>
+            <div class="sidebar-item">
+                <div class="sidebar-icon">📅</div>
+                <span>Sự kiện</span>
+            </div>
+            <div class="sidebar-item" onclick="logout()">
+                <div class="sidebar-icon">🚪</div>
+                <span>Đăng xuất</span>
+            </div>
+        </div>
+        
+        <!-- Center Feed -->
+        <div class="center-feed">
+            <!-- Stories -->
+            <div class="stories-container">
+                <div class="story-card">
+                    <div class="story-avatar">👤</div>
+                    <div class="story-name">Tin của bạn</div>
+                </div>
+                <div class="story-card">
+                    <div class="story-avatar">👤</div>
+                    <div class="story-name">Jane Smith</div>
+                </div>
+                <div class="story-card">
+                    <div class="story-avatar">👤</div>
+                    <div class="story-name">Bob Wilson</div>
+                </div>
+                <div class="story-card">
+                    <div class="story-avatar">👤</div>
+                    <div class="story-name">Alice Johnson</div>
+                </div>
+            </div>
+            
+            <!-- Create Post -->
+            <div class="create-post">
+                <div class="create-post-top">
+                    <div class="create-post-avatar" id="createPostAvatar">U</div>
+                    <input type="text" class="create-post-input" placeholder="Bạn đang nghĩ gì?" id="openCreatePost" readonly>
+                </div>
+                <div class="create-post-divider"></div>
+                <div class="create-post-actions">
+                    <div class="post-action">
+                        <span class="post-action-icon" style="color: #f3425f;">🎥</span>
+                        <span>Video trực tiếp</span>
+                    </div>
+                    <div class="post-action">
+                        <span class="post-action-icon" style="color: #45bd62;">🖼️</span>
+                        <span>Ảnh/video</span>
+                    </div>
+                    <div class="post-action">
+                        <span class="post-action-icon" style="color: #f7b928;">😊</span>
+                        <span>Cảm xúc/hoạt động</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Posts Feed -->
+            <div id="postsFeed"></div>
+        </div>
+        
+        <!-- Right Sidebar -->
+        <div class="right-sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Người liên hệ</div>
+                <div class="contact-item">
+                    <div class="contact-avatar">
+                        J
+                        <div class="online-status"></div>
+                    </div>
+                    <span>Jane Smith</span>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-avatar">
+                        B
+                        <div class="online-status"></div>
+                    </div>
+                    <span>Bob Wilson</span>
+                </div>
+                <div class="contact-item">
+                    <div class="contact-avatar">
+                        A
+                        <div class="online-status"></div>
+                    </div>
+                    <span>Alice Johnson</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Create Post Modal -->
+    <div class="modal" id="createPostModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Tạo bài viết</div>
+                <div class="modal-close" onclick="closeCreatePostModal()">×</div>
+            </div>
+            <div class="create-post-top" style="margin-bottom: 16px;">
+                <div class="create-post-avatar" id="modalAvatar">U</div>
+                <div>
+                    <div class="post-author-name" id="modalUsername">User</div>
+                    <div class="post-time">🌍 Công khai</div>
+                </div>
+            </div>
+            <textarea class="modal-textarea" id="postContent" placeholder="Bạn đang nghĩ gì?"></textarea>
+            <button class="modal-button" id="submitPost">Đăng</button>
+        </div>
+    </div>
+
+    <!-- Upload Profile Picture Modal -->
+    <div class="modal" id="uploadProfileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Cập nhật ảnh đại diện</div>
+                <div class="modal-close" onclick="closeUploadProfileModal()">×</div>
+            </div>
+            <div style="text-align: center; padding: 20px;">
+                <div id="previewContainer" style="margin-bottom: 20px;">
+                    <img id="imagePreview" style="max-width: 100%; max-height: 300px; border-radius: 8px; display: none;">
+                </div>
+                <input type="file" id="profilePictureInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+                <button class="modal-button" onclick="document.getElementById('profilePictureInput').click()" style="margin-bottom: 12px;">
+                    Chọn ảnh
+                </button>
+                <button class="modal-button" id="uploadButton" onclick="uploadProfilePicture()" style="display: none;">
+                    Tải lên
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/home.js"></script>
+</body>
+</html>
