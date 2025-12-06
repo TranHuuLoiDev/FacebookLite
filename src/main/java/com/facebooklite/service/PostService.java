@@ -6,6 +6,7 @@ import com.facebooklite.repository.PostRepository;
 import com.facebooklite.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,8 +19,14 @@ public class PostService {
     @Autowired
     private UserRepository userRepository;
     
+    @Transactional(readOnly = true)
     public List<Post> getAllPosts() {
-        return postRepository.findAllByOrderByCreatedAtDesc();
+        List<Post> posts = postRepository.findAllByOrderByCreatedAtDesc();
+        // Force load user data to avoid LazyInitializationException
+        posts.forEach(post -> {
+            post.getUser().getFirstName(); // Trigger lazy load
+        });
+        return posts;
     }
     
     public Optional<Post> getPostById(Long id) {
@@ -29,11 +36,17 @@ public class PostService {
         return postRepository.findById(id);
     }
     
+    @Transactional(readOnly = true)
     public List<Post> getPostsByUserId(Long userId) {
         if (userId == null) {
             throw new IllegalArgumentException("User ID cannot be null");
         }
-        return postRepository.findByUserIdOrderByCreatedAtDesc(userId);
+        List<Post> posts = postRepository.findByUserIdOrderByCreatedAtDesc(userId);
+        // Force load user data to avoid LazyInitializationException
+        posts.forEach(post -> {
+            post.getUser().getFirstName(); // Trigger lazy load
+        });
+        return posts;
     }
     
     public Post createPost(Post post, Long userId) {

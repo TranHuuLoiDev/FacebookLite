@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Facebook</title>
-    <link rel="stylesheet" href="../css/home.css">
+    <!-- CSS RESPONSIVE -->
+    <link rel="stylesheet" href="/css/home.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 </head>
 <body>
     <!-- Header -->
@@ -13,7 +16,7 @@
             <div class="header-left">
                 <a href="/html/home.html" class="logo">f</a>
                 <div class="search-box">
-                    <span>🔍</span>
+                    <span><i class="fa-solid fa-magnifying-glass"></i></span>
                     <input type="text" placeholder="Tìm kiếm trên Facebook">
                 </div>
             </div>
@@ -27,14 +30,14 @@
             </div>
             
             <div class="header-right">
-                <div class="icon-button">➕</div>
-                <div class="icon-button">💬</div>
-                <div class="icon-button">🔔</div>
+                <div class="icon-button"><i class="fa-solid fa-plus"></i></div>
+                <div class="icon-button"><i class="fa-regular fa-message"></i></div>
+                <div class="icon-button"><i class="fa-regular fa-bell"></i></div>
                 <div style="position: relative;">
                     <div class="user-avatar" id="userAvatar" onclick="toggleDropdown()">U</div>
                     <div class="user-dropdown" id="userDropdown">
                         <div class="dropdown-header">
-                            <div class="dropdown-user">
+                            <div class="dropdown-user" onclick="goToProfile()" style="cursor: pointer;">
                                 <div class="dropdown-avatar" id="dropdownAvatar">U</div>
                                 <div class="dropdown-user-info">
                                     <div class="dropdown-username" id="dropdownUsername">User</div>
@@ -66,7 +69,7 @@
     <div class="main-content">
         <!-- Left Sidebar -->
         <div class="left-sidebar">
-            <div class="sidebar-item">
+            <div class="sidebar-item" onclick="goToProfile()" style="cursor: pointer;">
                 <div class="user-avatar" id="sidebarAvatar">U</div>
                 <span id="sidebarUsername">User</span>
             </div>
@@ -197,6 +200,18 @@
                 </div>
             </div>
             <textarea class="modal-textarea" id="postContent" placeholder="Bạn đang nghĩ gì?"></textarea>
+            <div id="postImagePreviewContainer" style="margin-top: 12px; text-align: center; display: none;">
+                <div style="position: relative; display: inline-block;">
+                    <img id="postImagePreview" style="max-width: 100%; max-height: 300px; border-radius: 8px;">
+                    <button onclick="removePostImage()" style="position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.6); color: white; border: none; cursor: pointer; font-size: 20px; line-height: 1;">×</button>
+                </div>
+            </div>
+            <input type="file" id="postImageInput" accept="image/*" style="display: none;" onchange="handlePostImageSelect(event)">
+            <div style="display: flex; gap: 8px; margin-top: 12px;">
+                <button class="modal-button" onclick="document.getElementById('postImageInput').click()" style="flex: 1; background: #3a3b3c;">
+                    📷 Ảnh/video
+                </button>
+            </div>
             <button class="modal-button" id="submitPost">Đăng</button>
         </div>
     </div>

@@ -1,4 +1,10 @@
 let currentUser = null;
+let selectedPostImage = null;
+let selectedFile = null;
+
+// Get userId from URL or localStorage
+const urlParams = new URLSearchParams(window.location.search);
+const profileUserId = urlParams.get('userId');
 
 // Check authentication
 const userStr = localStorage.getItem('user');
@@ -6,28 +12,68 @@ if (!userStr) {
     window.location.href = '/html/login.html';
 } else {
     currentUser = JSON.parse(userStr);
-    updateUserInfo();
-    loadPosts();
+    const userIdToLoad = profileUserId || currentUser.userId;
+    loadUserProfile(userIdToLoad);
 }
 
-function updateUserInfo() {
-    const initial = currentUser.firstName ? currentUser.firstName.charAt(0).toUpperCase() : 'U';
-    const fullName = `${currentUser.firstName || ''} ${currentUser.lastName || ''}`.trim() || currentUser.username;
+async function loadUserProfile(userId) {
+    try {
+        const response = await fetch(`http://localhost:8080/api/users/${userId}`);
+        const user = await response.json();
+        
+        if (response.ok) {
+            displayUserProfile(user);
+            loadUserPosts(userId);
+        } else {
+            alert('Không thể tải thông tin người dùng');
+        }
+    } catch (error) {
+        console.error('Error loading user profile:', error);
+        alert('Có lỗi xảy ra khi tải trang cá nhân');
+    }
+}
+
+function displayUserProfile(user) {
+    const initial = user.firstName ? user.firstName.charAt(0).toUpperCase() : 'U';
+    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
     
-    // Update avatar with image or initial
-    updateAvatar('userAvatar', currentUser.profilePicture, initial);
-    updateAvatar('dropdownAvatar', currentUser.profilePicture, initial);
-    updateAvatar('createPostAvatar', currentUser.profilePicture, initial);
-    updateAvatar('modalAvatar', currentUser.profilePicture, initial);
-    updateAvatar('sidebarAvatar', currentUser.profilePicture, initial);
+    // Update profile picture
+    updateAvatar('profilePicture', user.profilePicture, initial);
+    updateAvatar('createPostAvatar', user.profilePicture, initial);
+    updateAvatar('modalAvatar', user.profilePicture, initial);
     
-    document.getElementById('dropdownUsername').textContent = fullName;
-    document.getElementById('sidebarUsername').textContent = fullName;
+    // Update header avatars (for current user)
+    if (user.id === currentUser.userId) {
+        updateAvatar('userAvatar', user.profilePicture, initial);
+        updateAvatar('dropdownAvatar', user.profilePicture, initial);
+    }
+    
+    // Update profile info
+    document.getElementById('profileName').textContent = fullName;
     document.getElementById('modalUsername').textContent = fullName;
+    document.getElementById('dropdownUsername').textContent = fullName;
+    
+    // Update intro section
+    if (user.bio) {
+        document.getElementById('bioSection').style.display = 'flex';
+        document.getElementById('bioText').textContent = user.bio;
+    }
+    
+    if (user.email) {
+        document.getElementById('emailSection').style.display = 'flex';
+        document.getElementById('emailText').textContent = user.email;
+    }
+    
+    if (user.phoneNumber) {
+        document.getElementById('phoneSection').style.display = 'flex';
+        document.getElementById('phoneText').textContent = user.phoneNumber;
+    }
 }
 
 function updateAvatar(elementId, profilePicture, initial) {
     const element = document.getElementById(elementId);
+    if (!element) return;
+    
     if (profilePicture && profilePicture.trim() !== '') {
         element.innerHTML = `<img src="${profilePicture}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
     } else {
@@ -36,135 +82,24 @@ function updateAvatar(elementId, profilePicture, initial) {
     }
 }
 
-function toggleDropdown() {
-    const dropdown = document.getElementById('userDropdown');
-    dropdown.classList.toggle('active');
-}
-
-// Close dropdown when clicking outside
-document.addEventListener('click', function(event) {
-    const dropdown = document.getElementById('userDropdown');
-    const avatar = document.getElementById('userAvatar');
-    
-    if (dropdown && !dropdown.contains(event.target) && !avatar.contains(event.target)) {
-        dropdown.classList.remove('active');
-    }
-});
-
-function logout() {
-    localStorage.removeItem('user');
-    window.location.href = '/html/login.html';
-}
-
-function goToProfile() {
-    window.location.href = '/html/profile.html';
-}
-
-// Open create post modal
-document.getElementById('openCreatePost').addEventListener('click', () => {
-    document.getElementById('createPostModal').classList.add('active');
-    document.getElementById('postContent').focus();
-});
-
-// Close create post modal
-function closeCreatePostModal() {
-    document.getElementById('createPostModal').classList.remove('active');
-    document.getElementById('postContent').value = '';
-}
-
-// Close modal on outside click
-document.getElementById('createPostModal').addEventListener('click', (e) => {
-    if (e.target.id === 'createPostModal') {
-        closeCreatePostModal();
-    }
-});
-
-// Submit post
-let selectedPostImage = null;
-
-function handlePostImageSelect(event) {
-    const file = event.target.files[0];
-    if (file) {
-        if (!file.type.startsWith('image/')) {
-            alert('Vui lòng chọn file ảnh');
-            return;
-        }
-        if (file.size > 5 * 1024 * 1024) {
-            alert('Kích thước ảnh không được vượt quá 5MB');
-            return;
-        }
-        
-        selectedPostImage = file;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('postImagePreview').src = e.target.result;
-            document.getElementById('postImagePreviewContainer').style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-function removePostImage() {
-    selectedPostImage = null;
-    document.getElementById('postImageInput').value = '';
-    document.getElementById('postImagePreviewContainer').style.display = 'none';
-}
-
-document.getElementById('submitPost').addEventListener('click', async () => {
-    const content = document.getElementById('postContent').value.trim();
-    
-    if (!content && !selectedPostImage) {
-        alert('Vui lòng nhập nội dung hoặc chọn ảnh');
-        return;
-    }
-    
+async function loadUserPosts(userId) {
     try {
-        const formData = new FormData();
-        formData.append('userId', currentUser.userId);
-        formData.append('content', content || '');
-        if (selectedPostImage) {
-            formData.append('image', selectedPostImage);
-        }
-        
-        const submitButton = document.getElementById('submitPost');
-        submitButton.textContent = 'Đang đăng...';
-        submitButton.disabled = true;
-        
-        const response = await fetch('http://localhost:8080/api/posts/create-with-image', {
-            method: 'POST',
-            body: formData
-        });
-        
-        const data = await response.json();
-        
-        if (response.ok) {
-            document.getElementById('postContent').value = '';
-            removePostImage();
-            closeCreatePostModal();
-            loadPosts();
-        } else {
-            alert(data.message || 'Không thể đăng bài viết. Vui lòng thử lại.');
-        }
-        
-        submitButton.textContent = 'Đăng';
-        submitButton.disabled = false;
-        
-    } catch (error) {
-        console.error('Error creating post:', error);
-        alert('Có lỗi xảy ra. Vui lòng thử lại.');
-        document.getElementById('submitPost').textContent = 'Đăng';
-        document.getElementById('submitPost').disabled = false;
-    }
-});
-
-// Load posts
-async function loadPosts() {
-    try {
-        const response = await fetch('http://localhost:8080/api/posts');
+        const response = await fetch(`http://localhost:8080/api/posts/user/${userId}`);
         const posts = await response.json();
         
         const postsFeed = document.getElementById('postsFeed');
         postsFeed.innerHTML = '';
+        
+        if (posts.length === 0) {
+            postsFeed.innerHTML = `
+                <div class="post-card">
+                    <div style="text-align: center; padding: 40px 20px; color: #b0b3b8;">
+                        <p>Chưa có bài viết nào</p>
+                    </div>
+                </div>
+            `;
+            return;
+        }
         
         posts.forEach(post => {
             const postCard = createPostCard(post);
@@ -183,7 +118,6 @@ function createPostCard(post) {
     const authorName = post.user ? `${post.user.firstName || ''} ${post.user.lastName || ''}`.trim() || post.user.username : 'Unknown';
     const timeAgo = formatDate(post.createdAt);
     
-    // Check if user has profile picture
     const avatarHtml = post.user?.profilePicture 
         ? `<img src="${post.user.profilePicture}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">` 
         : initial;
@@ -191,6 +125,8 @@ function createPostCard(post) {
     const postImageHtml = post.imageUrl 
         ? `<div class="post-image"><img src="${post.imageUrl}" alt="Post image" style="width: 100%; border-radius: 0; display: block;"></div>` 
         : '';
+    
+    const userInitial = currentUser.firstName ? currentUser.firstName.charAt(0).toUpperCase() : 'U';
     
     card.innerHTML = `
         <div class="post-header">
@@ -226,7 +162,7 @@ function createPostCard(post) {
                 <!-- Comments will be loaded here -->
             </div>
             <div class="comment-input-box">
-                <div class="comment-avatar">${currentUser.profilePicture ? `<img src="${currentUser.profilePicture}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">` : initial}</div>
+                <div class="comment-avatar">${currentUser.profilePicture ? `<img src="${currentUser.profilePicture}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">` : userInitial}</div>
                 <div class="comment-input-wrapper">
                     <input type="text" class="comment-input" id="comment-input-${post.id}" placeholder="Viết bình luận...">
                     <button class="comment-send-btn" onclick="postComment(${post.id})">
@@ -243,6 +179,25 @@ function createPostCard(post) {
     return card;
 }
 
+function formatDate(dateString) {
+    if (!dateString) return 'Không rõ';
+    
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'Vừa xong';
+    if (diffMins < 60) return `${diffMins} phút`;
+    if (diffHours < 24) return `${diffHours} giờ`;
+    if (diffDays < 7) return `${diffDays} ngày`;
+    
+    return date.toLocaleDateString('vi-VN');
+}
+
+// Like and Comment functions
 async function toggleLike(postId) {
     try {
         const response = await fetch('http://localhost:8080/api/likes/toggle', {
@@ -290,10 +245,12 @@ async function checkIfLiked(postId) {
         
         if (data.liked) {
             const likeBtn = document.getElementById(`like-btn-${postId}`);
-            const icon = likeBtn.querySelector('i');
-            icon.classList.remove('fa-regular');
-            icon.classList.add('fa-solid');
-            likeBtn.style.color = '#2e89ff';
+            if (likeBtn) {
+                const icon = likeBtn.querySelector('i');
+                icon.classList.remove('fa-regular');
+                icon.classList.add('fa-solid');
+                likeBtn.style.color = '#2e89ff';
+            }
         }
     } catch (error) {
         console.error('Error checking like status:', error);
@@ -327,7 +284,6 @@ async function loadComments(postId) {
         const comments = await response.json();
         
         console.log('Loaded comments for post', postId, ':', comments);
-        console.log('Is array?', Array.isArray(comments));
         
         const commentsList = document.getElementById(`comments-list-${postId}`);
         if (!commentsList) {
@@ -460,25 +416,110 @@ async function deleteComment(commentId, postId) {
     }
 }
 
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-    
-    if (diffMins < 1) return 'Vừa xong';
-    if (diffMins < 60) return diffMins + ' phút';
-    if (diffHours < 24) return diffHours + ' giờ';
-    if (diffDays < 7) return diffDays + ' ngày';
-    
-    return date.toLocaleDateString('vi-VN');
+// Dropdown menu
+function toggleDropdown() {
+    const dropdown = document.getElementById('userDropdown');
+    dropdown.classList.toggle('active');
 }
 
-// Profile Picture Upload Functions
-let selectedFile = null;
+// Close dropdown when clicking outside
+document.addEventListener('click', (event) => {
+    const dropdown = document.getElementById('userDropdown');
+    const avatar = document.getElementById('userAvatar');
+    
+    if (!dropdown.contains(event.target) && !avatar.contains(event.target)) {
+        dropdown.classList.remove('active');
+    }
+});
 
+// Create post modal
+function openCreatePostModal() {
+    document.getElementById('createPostModal').classList.add('active');
+    document.getElementById('postContent').focus();
+}
+
+function closeCreatePostModal() {
+    document.getElementById('createPostModal').classList.remove('active');
+    document.getElementById('postContent').value = '';
+    removePostImage();
+}
+
+function handlePostImageSelect(event) {
+    const file = event.target.files[0];
+    if (file) {
+        if (!file.type.startsWith('image/')) {
+            alert('Vui lòng chọn file ảnh');
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Kích thước ảnh không được vượt quá 5MB');
+            return;
+        }
+        
+        selectedPostImage = file;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('postImagePreview').src = e.target.result;
+            document.getElementById('postImagePreviewContainer').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function removePostImage() {
+    selectedPostImage = null;
+    document.getElementById('postImageInput').value = '';
+    document.getElementById('postImagePreviewContainer').style.display = 'none';
+}
+
+document.getElementById('submitPost').addEventListener('click', async () => {
+    const content = document.getElementById('postContent').value.trim();
+    
+    if (!content && !selectedPostImage) {
+        alert('Vui lòng nhập nội dung hoặc chọn ảnh');
+        return;
+    }
+    
+    try {
+        const formData = new FormData();
+        formData.append('userId', currentUser.userId);
+        formData.append('content', content || '');
+        if (selectedPostImage) {
+            formData.append('image', selectedPostImage);
+        }
+        
+        const submitButton = document.getElementById('submitPost');
+        submitButton.textContent = 'Đang đăng...';
+        submitButton.disabled = true;
+        
+        const response = await fetch('http://localhost:8080/api/posts/create-with-image', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            document.getElementById('postContent').value = '';
+            removePostImage();
+            closeCreatePostModal();
+            loadUserPosts(profileUserId || currentUser.userId);
+        } else {
+            alert(data.message || 'Không thể đăng bài viết. Vui lòng thử lại.');
+        }
+        
+        submitButton.textContent = 'Đăng';
+        submitButton.disabled = false;
+        
+    } catch (error) {
+        console.error('Error creating post:', error);
+        alert('Có lỗi xảy ra. Vui lòng thử lại.');
+        document.getElementById('submitPost').textContent = 'Đăng';
+        document.getElementById('submitPost').disabled = false;
+    }
+});
+
+// Profile picture upload
 function openProfilePictureUpload() {
     document.getElementById('uploadProfileModal').classList.add('active');
     document.getElementById('userDropdown').classList.remove('active');
@@ -486,39 +527,34 @@ function openProfilePictureUpload() {
 
 function closeUploadProfileModal() {
     document.getElementById('uploadProfileModal').classList.remove('active');
+    document.getElementById('profilePictureInput').value = '';
     document.getElementById('imagePreview').style.display = 'none';
     document.getElementById('uploadButton').style.display = 'none';
-    document.getElementById('profilePictureInput').value = '';
     selectedFile = null;
 }
 
 function handleFileSelect(event) {
     const file = event.target.files[0];
-    if (!file) return;
-    
-    // Check file type
-    if (!file.type.startsWith('image/')) {
-        alert('Vui lòng chọn file ảnh');
-        return;
+    if (file) {
+        if (!file.type.startsWith('image/')) {
+            alert('Vui lòng chọn file ảnh');
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Kích thước ảnh không được vượt quá 5MB');
+            return;
+        }
+        
+        selectedFile = file;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('imagePreview');
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            document.getElementById('uploadButton').style.display = 'block';
+        };
+        reader.readAsDataURL(file);
     }
-    
-    // Check file size (5MB)
-    if (file.size > 5 * 1024 * 1024) {
-        alert('File không được vượt quá 5MB');
-        return;
-    }
-    
-    selectedFile = file;
-    
-    // Preview image
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const preview = document.getElementById('imagePreview');
-        preview.src = e.target.result;
-        preview.style.display = 'block';
-        document.getElementById('uploadButton').style.display = 'block';
-    };
-    reader.readAsDataURL(file);
 }
 
 async function uploadProfilePicture() {
@@ -550,12 +586,10 @@ async function uploadProfilePicture() {
         const data = await response.json();
         
         if (response.ok) {
-            // Update current user with new profile picture
             currentUser.profilePicture = data.profilePicture;
             localStorage.setItem('user', JSON.stringify(currentUser));
             
-            // Update UI
-            updateUserInfo();
+            loadUserProfile(currentUser.userId);
             
             alert('Cập nhật ảnh đại diện thành công!');
             closeUploadProfileModal();
@@ -573,3 +607,37 @@ async function uploadProfilePicture() {
         document.getElementById('uploadButton').disabled = false;
     }
 }
+
+async function likePost(postId) {
+    try {
+        const response = await fetch(`http://localhost:8080/api/posts/${postId}/like`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: currentUser.userId
+            })
+        });
+        
+        if (response.ok) {
+            loadUserPosts(profileUserId || currentUser.userId);
+        }
+    } catch (error) {
+        console.error('Error liking post:', error);
+    }
+}
+
+function logout() {
+    localStorage.removeItem('user');
+    window.location.href = '/html/login.html';
+}
+
+// Close modals when clicking outside
+document.querySelectorAll('.modal').forEach(modal => {
+    modal.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.classList.remove('active');
+        }
+    });
+});

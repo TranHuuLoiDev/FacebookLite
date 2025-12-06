@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang cá nhân - Facebook</title>
+    <link rel="stylesheet" href="../css/profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">facebook</div>
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Tìm kiếm trên Facebook">
+            </div>
+        </div>
+        
+        <div class="header-center">
+            <a href="/html/home.html" class="nav-icon">
+                <i class="fa-solid fa-house"></i>
+            </a>
+            <div class="nav-icon">
+                <i class="fa-solid fa-users"></i>
+            </div>
+            <div class="nav-icon">
+                <i class="fa-solid fa-tv"></i>
+            </div>
+            <div class="nav-icon">
+                <i class="fa-solid fa-store"></i>
+            </div>
+            <div class="nav-icon">
+                <i class="fa-solid fa-users-rectangle"></i>
+            </div>
+        </div>
+        
+        <div class="header-right">
+            <div class="header-icon">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+            <div class="header-icon">
+                <i class="fa-brands fa-facebook-messenger"></i>
+            </div>
+            <div class="header-icon">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+            <div class="user-avatar" id="userAvatar" onclick="toggleDropdown()">U</div>
+            
+            <!-- Dropdown Menu -->
+            <div class="user-dropdown" id="userDropdown">
+                <div class="dropdown-profile">
+                    <div class="user-avatar" id="dropdownAvatar">U</div>
+                    <div>
+                        <div class="dropdown-username" id="dropdownUsername">User</div>
+                    </div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <div class="dropdown-item" onclick="openProfilePictureUpload()">
+                    <i class="fa-solid fa-camera"></i>
+                    <span>Đổi ảnh đại diện</span>
+                </div>
+                <div class="dropdown-divider"></div>
+                <div class="dropdown-item" onclick="logout()">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Đăng xuất</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Profile Container -->
+    <div class="profile-container">
+        <!-- Cover Photo -->
+        <div class="cover-photo">
+            <div class="cover-photo-overlay">
+                <button class="edit-cover-btn">
+                    <i class="fa-solid fa-camera"></i>
+                    Chỉnh sửa ảnh bìa
+                </button>
+            </div>
+        </div>
+
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <div class="profile-header-content">
+                <div class="profile-picture-container">
+                    <div class="profile-picture" id="profilePicture">U</div>
+                    <button class="edit-profile-picture-btn" onclick="openProfilePictureUpload()">
+                        <i class="fa-solid fa-camera"></i>
+                    </button>
+                </div>
+                <div class="profile-info">
+                    <h1 class="profile-name" id="profileName">User</h1>
+                    <div class="profile-stats">
+                        <span id="friendCount">0 bạn bè</span>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <button class="profile-btn primary">
+                        <i class="fa-solid fa-plus"></i>
+                        Thêm vào tin
+                    </button>
+                    <button class="profile-btn">
+                        <i class="fa-solid fa-pen"></i>
+                        Chỉnh sửa trang cá nhân
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Navigation -->
+        <div class="profile-nav">
+            <div class="profile-nav-content">
+                <div class="profile-nav-tabs">
+                    <div class="profile-nav-tab active">Bài viết</div>
+                    <div class="profile-nav-tab">Giới thiệu</div>
+                    <div class="profile-nav-tab">Bạn bè</div>
+                    <div class="profile-nav-tab">Ảnh</div>
+                    <div class="profile-nav-tab">Video</div>
+                    <div class="profile-nav-tab">Xem thêm</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="profile-content">
+            <!-- Left Column -->
+            <div class="profile-left">
+                <div class="intro-card">
+                    <h2>Giới thiệu</h2>
+                    <div class="intro-item" id="bioSection" style="display: none;">
+                        <p id="bioText"></p>
+                    </div>
+                    <div class="intro-item" id="emailSection" style="display: none;">
+                        <i class="fa-solid fa-envelope"></i>
+                        <span id="emailText"></span>
+                    </div>
+                    <div class="intro-item" id="phoneSection" style="display: none;">
+                        <i class="fa-solid fa-phone"></i>
+                        <span id="phoneText"></span>
+                    </div>
+                    <button class="intro-edit-btn">Chỉnh sửa phần giới thiệu</button>
+                </div>
+
+                <div class="photos-card">
+                    <div class="card-header">
+                        <h2>Ảnh</h2>
+                        <a href="#">Xem tất cả ảnh</a>
+                    </div>
+                    <div class="photos-grid" id="photosGrid">
+                        <!-- Photos will be loaded here -->
+                    </div>
+                </div>
+
+                <div class="friends-card">
+                    <div class="card-header">
+                        <h2>Bạn bè</h2>
+                        <a href="#">Xem tất cả bạn bè</a>
+                    </div>
+                    <div class="friend-count" id="friendCountDetail">0 người bạn</div>
+                    <div class="friends-grid" id="friendsGrid">
+                        <!-- Friends will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="profile-right">
+                <!-- Create Post -->
+                <div class="create-post-card">
+                    <div class="create-post-top">
+                        <div class="create-post-avatar" id="createPostAvatar">U</div>
+                        <input type="text" placeholder="Bạn đang nghĩ gì?" onclick="openCreatePostModal()">
+                    </div>
+                    <div class="create-post-actions">
+                        <div class="create-post-action">
+                            <i class="fa-solid fa-image" style="color: #45bd62;"></i>
+                            <span>Ảnh/video</span>
+                        </div>
+                        <div class="create-post-action">
+                            <i class="fa-solid fa-face-smile" style="color: #f7b928;"></i>
+                            <span>Cảm xúc/hoạt động</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Posts Feed -->
+                <div id="postsFeed">
+                    <!-- Posts will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Post Modal -->
+    <div class="modal" id="createPostModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Tạo bài viết</div>
+                <div class="modal-close" onclick="closeCreatePostModal()">×</div>
+            </div>
+            <div class="create-post-top" style="margin-bottom: 16px;">
+                <div class="create-post-avatar" id="modalAvatar">U</div>
+                <div>
+                    <div class="post-author-name" id="modalUsername">User</div>
+                    <div class="post-time">🌍 Công khai</div>
+                </div>
+            </div>
+            <textarea class="modal-textarea" id="postContent" placeholder="Bạn đang nghĩ gì?"></textarea>
+            <div id="postImagePreviewContainer" style="margin-top: 12px; text-align: center; display: none;">
+                <div style="position: relative; display: inline-block;">
+                    <img id="postImagePreview" style="max-width: 100%; max-height: 300px; border-radius: 8px;">
+                    <button onclick="removePostImage()" style="position: absolute; top: 8px; right: 8px; width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.6); color: white; border: none; cursor: pointer; font-size: 20px; line-height: 1;">×</button>
+                </div>
+            </div>
+            <input type="file" id="postImageInput" accept="image/*" style="display: none;" onchange="handlePostImageSelect(event)">
+            <div style="display: flex; gap: 8px; margin-top: 12px;">
+                <button class="modal-button" onclick="document.getElementById('postImageInput').click()" style="flex: 1; background: #3a3b3c;">
+                    📷 Ảnh/video
+                </button>
+            </div>
+            <button class="modal-button" id="submitPost">Đăng</button>
+        </div>
+    </div>
+
+    <!-- Upload Profile Picture Modal -->
+    <div class="modal" id="uploadProfileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Cập nhật ảnh đại diện</div>
+                <div class="modal-close" onclick="closeUploadProfileModal()">×</div>
+            </div>
+            <div style="text-align: center; padding: 20px;">
+                <div id="previewContainer" style="margin-bottom: 20px;">
+                    <img id="imagePreview" style="max-width: 100%; max-height: 300px; border-radius: 8px; display: none;">
+                </div>
+                <input type="file" id="profilePictureInput" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+                <button class="modal-button" onclick="document.getElementById('profilePictureInput').click()" style="margin-bottom: 12px;">
+                    Chọn ảnh
+                </button>
+                <button class="modal-button" id="uploadButton" onclick="uploadProfilePicture()" style="display: none;">
+                    Tải lên
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/profile.js"></script>
+</body>
+</html>
