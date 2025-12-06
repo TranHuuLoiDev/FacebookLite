@@ -44,16 +44,29 @@ FacebookLite/
 - **JWT** - Token-based authentication
 - **Maven** - Build tool
 
+## Thành viên
+1. Trần Hữu Lợi 
+2. Lương Quốc An
+3. Trần Lâm Nhật Tường
+4. Phan Khải Điền
+
+## Công nghệ sử dụng
+- Springboot
+- Java
+- Javascript
+- HTML
+- CSS
+
 ## Tính năng chính
 
-- 👤 Đăng ký & Đăng nhập người dùng
-- 📝 Đăng bài viết (Post)
-- 👍 Like & Comment
-- 👥 Kết bạn (Friend requests)
-- 💬 Nhắn tin (Messaging)
-- 📷 Upload ảnh
-- 🔔 Thông báo (Notifications)
-- 🔒 Bảo mật với JWT
+- Đăng ký & Đăng nhập người dùng
+- Đăng bài viết (Post)
+- Like & Comment
+- Kết bạn (Friend requests)
+- Nhắn tin (Messaging)
+- Upload ảnh
+- Thông báo (Notifications)
+- Bảo mật với JWT
 
 ## Cài đặt
 
