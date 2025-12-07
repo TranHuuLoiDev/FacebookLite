@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đoạn chat • Messenger</title>
+    <link rel="stylesheet" href="/css/messenger-panel.css">
+    <link rel="stylesheet" href="/css/chat-popup.css">
+</head>
+<body>
+    <div class="messenger-panel">
+        <div class="messenger-header">
+            <h1>Đoạn chat</h1>
+            <div class="messenger-header-actions">
+                <button class="messenger-icon-btn" title="Tùy chọn">⋯</button>
+                <button class="messenger-icon-btn" title="Tin nhắn mới">✎</button>
+            </div>
+        </div>
+
+        <div class="messenger-search">
+            <div class="search-input-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Tìm kiếm trên Messenger" id="searchInput">
+            </div>
+        </div>
+
+        <div class="messenger-tabs">
+            <button class="tab-btn active" data-tab="all">Tất cả</button>
+            <button class="tab-btn" data-tab="unread">Chưa đọc</button>
+            <button class="tab-btn" data-tab="groups">Nhóm</button>
+            <button class="tab-btn" data-tab="community">Cộng đồng</button>
+        </div>
+
+        <div class="messenger-conversations" id="conversationsList">
+            <div class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Đang tải...</p>
+            </div>
+        </div>
+
+        <div class="messenger-footer">
+            <a href="/html/messages.html" class="view-all-link">
+                Xem tất cả trong Messenger
+            </a>
+        </div>
+    </div>
+
+    <script src="/js/chat-popup.js"></script>
+    <script src="/js/messenger-panel.js"></script>
+</body>
+</html>
