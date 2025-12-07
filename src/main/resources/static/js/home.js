@@ -1,5 +1,12 @@
 let currentUser = null;
 
+// Utility function to escape HTML and prevent XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 // Check authentication
 const userStr = localStorage.getItem('user');
 if (!userStr) {
@@ -37,18 +44,201 @@ function updateAvatar(elementId, profilePicture, initial) {
     }
 }
 
-function toggleDropdown() {
-    const dropdown = document.getElementById('userDropdown');
-    dropdown.classList.toggle('active');
+// Messenger Dropdown
+let messengerConversations = [];
+let messengerLoadInterval = null;
+
+function toggleMessengerDropdown() {
+    const dropdown = document.getElementById('messengerDropdown');
+    const isActive = dropdown.classList.contains('active');
+    
+    // Close user dropdown if open
+    document.getElementById('userDropdown').classList.remove('active');
+    
+    if (!isActive) {
+        dropdown.classList.add('active');
+        loadMessengerConversations();
+        
+        // Auto refresh every 5 seconds while open
+        if (messengerLoadInterval) {
+            clearInterval(messengerLoadInterval);
+        }
+        messengerLoadInterval = setInterval(loadMessengerConversations, 5000);
+    } else {
+        dropdown.classList.remove('active');
+        if (messengerLoadInterval) {
+            clearInterval(messengerLoadInterval);
+            messengerLoadInterval = null;
+        }
+    }
 }
 
-// Close dropdown when clicking outside
-document.addEventListener('click', function(event) {
-    const dropdown = document.getElementById('userDropdown');
-    const avatar = document.getElementById('userAvatar');
+async function loadMessengerConversations() {
+    const currentUser = JSON.parse(localStorage.getItem('user'));
+    if (!currentUser) return;
     
-    if (dropdown && !dropdown.contains(event.target) && !avatar.contains(event.target)) {
+    try {
+        const response = await fetch(`http://localhost:8080/api/messages/conversations/${currentUser.userId}`);
+        messengerConversations = await response.json();
+        
+        displayMessengerConversations(messengerConversations);
+        updateMessengerBadge();
+    } catch (error) {
+        console.error('Error loading messenger conversations:', error);
+        document.getElementById('messengerConversationsList').innerHTML = 
+            '<div class="messenger-empty">Lỗi tải dữ liệu</div>';
+    }
+}
+
+function displayMessengerConversations(conversations) {
+    const container = document.getElementById('messengerConversationsList');
+    
+    if (conversations.length === 0) {
+        container.innerHTML = '<div class="messenger-empty">Chưa có đoạn chat nào</div>';
+        return;
+    }
+    
+    // Show max 8 conversations
+    const limited = conversations.slice(0, 8);
+    
+    container.innerHTML = '';
+    limited.forEach(conv => {
+        const item = createMessengerConversationItem(conv);
+        container.appendChild(item);
+    });
+}
+
+function createMessengerConversationItem(conv) {
+    const div = document.createElement('div');
+    div.className = 'messenger-conversation-item';
+    
+    const initial = conv.firstName ? conv.firstName.charAt(0).toUpperCase() : 'U';
+    const fullName = `${conv.firstName || ''} ${conv.lastName || ''}`.trim() || conv.username;
+    const timeAgo = formatTimeAgo(conv.lastMessageTime);
+    
+    const avatarHtml = conv.profilePicture 
+        ? `<img src="${conv.profilePicture}" alt="${fullName}">` 
+        : initial;
+    
+    const lastMessagePrefix = conv.isLastMessageFromMe ? 'Bạn: ' : '';
+    const unreadClass = conv.unreadCount > 0 ? 'unread' : '';
+    
+    div.innerHTML = `
+        <div class="messenger-conv-avatar">
+            ${avatarHtml}
+            <div class="messenger-online-dot"></div>
+        </div>
+        <div class="messenger-conv-content">
+            <div class="messenger-conv-header">
+                <span class="messenger-conv-name">${escapeHtml(fullName)}</span>
+                <span class="messenger-conv-time">${timeAgo}</span>
+            </div>
+            <div class="messenger-conv-message ${unreadClass}">
+                ${lastMessagePrefix}${escapeHtml(conv.lastMessage || '')}
+            </div>
+        </div>
+        ${conv.unreadCount > 0 ? `<div class="messenger-unread-badge">${conv.unreadCount}</div>` : ''}
+    `;
+    
+    div.addEventListener('click', () => {
+        const avatarForPopup = conv.profilePicture 
+            ? `<img src="${conv.profilePicture}" style="width: 100%; height: 100%; object-fit: cover;">` 
+            : initial;
+        
+        window.openChatPopup(conv.userId, fullName, avatarForPopup);
+        
+        // Close dropdown
+        document.getElementById('messengerDropdown').classList.remove('active');
+        if (messengerLoadInterval) {
+            clearInterval(messengerLoadInterval);
+            messengerLoadInterval = null;
+        }
+    });
+    
+    return div;
+}
+
+function updateMessengerBadge() {
+    const badge = document.getElementById('messengerBadge');
+    const totalUnread = messengerConversations.reduce((sum, conv) => sum + conv.unreadCount, 0);
+    
+    if (totalUnread > 0) {
+        badge.textContent = totalUnread > 99 ? '99+' : totalUnread;
+        badge.style.display = 'flex';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+function formatTimeAgo(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const seconds = Math.floor((now - date) / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    
+    if (seconds < 60) return 'Vừa xong';
+    if (minutes < 60) return `${minutes} phút`;
+    if (hours < 24) return `${hours} giờ`;
+    if (days < 7) return `${days} ngày`;
+    
+    return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+}
+
+// Messenger search
+document.addEventListener('DOMContentLoaded', () => {
+    const messengerSearch = document.getElementById('messengerSearch');
+    if (messengerSearch) {
+        messengerSearch.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filtered = messengerConversations.filter(conv => {
+                const fullName = `${conv.firstName} ${conv.lastName}`.toLowerCase();
+                const username = conv.username.toLowerCase();
+                return fullName.includes(searchTerm) || username.includes(searchTerm);
+            });
+            displayMessengerConversations(filtered);
+        });
+    }
+});
+
+function toggleDropdown() {
+    const dropdown = document.getElementById('userDropdown');
+    const isActive = dropdown.classList.contains('active');
+    
+    // Close messenger dropdown if open
+    document.getElementById('messengerDropdown').classList.remove('active');
+    if (messengerLoadInterval) {
+        clearInterval(messengerLoadInterval);
+        messengerLoadInterval = null;
+    }
+    
+    if (!isActive) {
+        dropdown.classList.add('active');
+    } else {
         dropdown.classList.remove('active');
+    }
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(event) {
+    const userDropdown = document.getElementById('userDropdown');
+    const messengerDropdown = document.getElementById('messengerDropdown');
+    const avatar = document.getElementById('userAvatar');
+    const messengerBtn = document.getElementById('messengerBtn');
+    
+    // Close user dropdown
+    if (userDropdown && !userDropdown.contains(event.target) && !avatar.contains(event.target)) {
+        userDropdown.classList.remove('active');
+    }
+    
+    // Close messenger dropdown
+    if (messengerDropdown && !messengerDropdown.contains(event.target) && !messengerBtn.contains(event.target)) {
+        messengerDropdown.classList.remove('active');
+        if (messengerLoadInterval) {
+            clearInterval(messengerLoadInterval);
+            messengerLoadInterval = null;
+        }
     }
 });
 

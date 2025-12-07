@@ -314,9 +314,10 @@ class ChatPopupManager {
                     });
                 }
 
-                if (!silent) {
+                // Always scroll to bottom after loading messages
+                setTimeout(() => {
                     this.scrollToBottom(popup);
-                }
+                }, 100);
 
                 popup.lastMessageId = latestMessageId;
             }

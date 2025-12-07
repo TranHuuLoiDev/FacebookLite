@@ -32,8 +32,32 @@
             
             <div class="header-right">
                 <div class="icon-button"><i class="fa-solid fa-plus"></i></div>
-                <div class="icon-button" onclick="window.location.href='/html/messenger-panel.html'" style="cursor: pointer;"><i class="fa-regular fa-message"></i></div>
+                <div class="icon-button" id="messengerBtn" onclick="toggleMessengerDropdown()" style="cursor: pointer; position: relative;">
+                    <i class="fa-regular fa-message"></i>
+                    <span class="notification-badge" id="messengerBadge" style="display: none;">0</span>
+                </div>
                 <div class="icon-button"><i class="fa-regular fa-bell"></i></div>
+                
+                <!-- Messenger Dropdown -->
+                <div id="messengerDropdown" class="messenger-dropdown">
+                    <div class="messenger-dropdown-header">
+                        <h3>Đoạn chat</h3>
+                        <div class="messenger-dropdown-actions">
+                            <button class="messenger-dropdown-icon-btn" title="Tùy chọn">⋯</button>
+                            <button class="messenger-dropdown-icon-btn" title="Tin nhắn mới">✎</button>
+                        </div>
+                    </div>
+                    <div class="messenger-dropdown-search">
+                        <input type="text" placeholder="Tìm kiếm trong Messenger" id="messengerSearch">
+                    </div>
+                    <div class="messenger-dropdown-list" id="messengerConversationsList">
+                        <div class="messenger-loading">Đang tải...</div>
+                    </div>
+                    <div class="messenger-dropdown-footer">
+                        <a href="/html/messages.html" class="messenger-view-all">Xem tất cả trong Messenger</a>
+                    </div>
+                </div>
+                
                 <div style="position: relative;">
                     <div class="user-avatar" id="userAvatar" onclick="toggleDropdown()">U</div>
                     <div class="user-dropdown" id="userDropdown">
@@ -242,6 +266,7 @@
         </div>
     </div>
 
+    <script src="../js/chat-popup.js"></script>
     <script src="../js/home.js"></script>
 </body>
 </html>

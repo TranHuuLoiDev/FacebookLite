@@ -206,9 +206,12 @@ async function loadMessages(silent = false) {
                 container.appendChild(msgElement);
             });
             
-            if (shouldScrollToBottom || !silent) {
-                container.scrollTop = container.scrollHeight;
-            }
+            // Always scroll to bottom after loading messages with a small delay
+            setTimeout(() => {
+                if (shouldScrollToBottom || !silent) {
+                    container.scrollTop = container.scrollHeight;
+                }
+            }, 100);
             
             lastMessageId = latestMessageId;
         }
