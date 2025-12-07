@@ -31,7 +31,7 @@
             
             <div class="header-right">
                 <div class="icon-button"><i class="fa-solid fa-plus"></i></div>
-                <div class="icon-button"><i class="fa-regular fa-message"></i></div>
+                <div class="icon-button" onclick="window.location.href='/html/messages.html'" style="cursor: pointer;"><i class="fa-regular fa-message"></i></div>
                 <div class="icon-button"><i class="fa-regular fa-bell"></i></div>
                 <div style="position: relative;">
                     <div class="user-avatar" id="userAvatar" onclick="toggleDropdown()">U</div>
@@ -160,21 +160,24 @@
         <div class="right-sidebar">
             <div class="sidebar-section">
                 <div class="sidebar-title">Người liên hệ</div>
-                <div class="contact-item">
+                <div id="contactsList">
+                    <div style="text-align: center; padding: 16px; color: #65676b;">Đang tải...</div>
+                </div>
+                <div class="contact-item" style="display: none;">
                     <div class="contact-avatar">
                         J
                         <div class="online-status"></div>
                     </div>
                     <span>Jane Smith</span>
                 </div>
-                <div class="contact-item">
+                <div class="contact-item" style="display: none;">
                     <div class="contact-avatar">
                         B
                         <div class="online-status"></div>
                     </div>
                     <span>Bob Wilson</span>
                 </div>
-                <div class="contact-item">
+                <div class="contact-item" style="display: none;">
                     <div class="contact-avatar">
                         A
                         <div class="online-status"></div>

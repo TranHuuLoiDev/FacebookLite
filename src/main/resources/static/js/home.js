@@ -8,6 +8,7 @@ if (!userStr) {
     currentUser = JSON.parse(userStr);
     updateUserInfo();
     loadPosts();
+    loadContacts();
 }
 
 function updateUserInfo() {
@@ -572,4 +573,66 @@ async function uploadProfilePicture() {
         document.getElementById('uploadButton').textContent = 'Tải lên';
         document.getElementById('uploadButton').disabled = false;
     }
+}
+
+// Load contacts list
+async function loadContacts() {
+    try {
+        const response = await fetch('http://localhost:8080/api/users');
+        const users = await response.json();
+        
+        const contactsList = document.getElementById('contactsList');
+        contactsList.innerHTML = '';
+        
+        // Filter out current user and show others
+        const otherUsers = users.filter(user => user.id !== currentUser.userId);
+        
+        if (otherUsers.length === 0) {
+            contactsList.innerHTML = '<div style="text-align: center; padding: 16px; color: #65676b;">Chưa có người dùng khác</div>';
+            return;
+        }
+        
+        otherUsers.forEach(user => {
+            const contactElement = createContactElement(user);
+            contactsList.appendChild(contactElement);
+        });
+    } catch (error) {
+        console.error('Error loading contacts:', error);
+        document.getElementById('contactsList').innerHTML = '<div style="text-align: center; padding: 16px; color: #e74c3c;">Lỗi tải danh sách</div>';
+    }
+}
+
+function createContactElement(user) {
+    const div = document.createElement('div');
+    div.className = 'contact-item';
+    div.style.cursor = 'pointer';
+    
+    const initial = user.firstName ? user.firstName.charAt(0).toUpperCase() : user.username.charAt(0).toUpperCase();
+    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
+    
+    const avatarHtml = user.profilePicture 
+        ? `<img src="${user.profilePicture}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">` 
+        : initial;
+    
+    div.innerHTML = `
+        <div class="contact-avatar">
+            ${avatarHtml}
+            <div class="online-status"></div>
+        </div>
+        <span>${fullName}</span>
+    `;
+    
+    div.addEventListener('click', () => {
+        // Save selected user to localStorage and redirect to messages
+        localStorage.setItem('chatWithUser', JSON.stringify({
+            userId: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            username: user.username,
+            profilePicture: user.profilePicture
+        }));
+        window.location.href = '/html/messages.html';
+    });
+    
+    return div;
 }

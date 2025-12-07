@@ -11,8 +11,11 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(nullable = false, length = 2000)
+    @Column(length = 2000, nullable = true)
     private String content;
+    
+    @Column(name = "image_url", nullable = true)
+    private String imageUrl;
     
     @Column(name = "sender_id", nullable = false)
     private Long senderId;
@@ -87,5 +90,13 @@ public class Message {
     
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+    
+    public String getImageUrl() {
+        return imageUrl;
+    }
+    
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
