@@ -50,6 +50,9 @@ function displayUserProfile(user) {
     
     // Update profile info
     document.getElementById('profileName').textContent = fullName;
+    
+    // Load profile actions (friend request buttons)
+    loadProfileActions(user.id);
     document.getElementById('modalUsername').textContent = fullName;
     document.getElementById('dropdownUsername').textContent = fullName;
     
@@ -632,6 +635,220 @@ function logout() {
     localStorage.removeItem('user');
     window.location.href = '/html/login.html';
 }
+
+// Friend Request Functions
+async function loadProfileActions(profileUserId) {
+    const actionsContainer = document.getElementById('profileActions');
+    
+    // If viewing own profile
+    if (profileUserId === currentUser.userId) {
+        actionsContainer.innerHTML = `
+            <button class="profile-btn primary">
+                <i class="fa-solid fa-plus"></i>
+                Thêm vào tin
+            </button>
+            <button class="profile-btn">
+                <i class="fa-solid fa-pen"></i>
+                Chỉnh sửa trang cá nhân
+            </button>
+        `;
+        return;
+    }
+    
+    // Check friendship status
+    try {
+        const response = await fetch(`http://localhost:8080/api/friend-requests/status/${currentUser.userId}/${profileUserId}`);
+        const data = await response.json();
+        
+        displayProfileActions(data.status, profileUserId);
+    } catch (error) {
+        console.error('Error loading friendship status:', error);
+    }
+}
+
+function displayProfileActions(status, profileUserId) {
+    const actionsContainer = document.getElementById('profileActions');
+    
+    if (status === 'FRIENDS') {
+        actionsContainer.innerHTML = `
+            <div style="position: relative; display: inline-block;">
+                <button class="profile-btn primary" id="friendsMenuBtn" onclick="toggleFriendsMenu(event, ${profileUserId})">
+                    <i class="fa-solid fa-user-check"></i>
+                    Bạn bè
+                    <i class="fa-solid fa-caret-down" style="margin-left: 4px;"></i>
+                </button>
+                <div id="friendsMenu" class="friends-dropdown-menu" style="display: none;">
+                    <div class="friends-menu-item" onclick="unfriend(${profileUserId})">
+                        <i class="fa-solid fa-user-xmark"></i>
+                        Hủy kết bạn
+                    </div>
+                </div>
+            </div>
+            <button class="profile-btn" onclick="sendMessage(${profileUserId})">
+                <i class="fa-brands fa-facebook-messenger"></i>
+                Nhắn tin
+            </button>
+        `;
+    } else if (status === 'REQUEST_SENT') {
+        actionsContainer.innerHTML = `
+            <button class="profile-btn" onclick="cancelFriendRequest(${profileUserId})">
+                <i class="fa-solid fa-user-clock"></i>
+                Hủy lời mời
+            </button>
+            <button class="profile-btn" onclick="sendMessage(${profileUserId})">
+                <i class="fa-brands fa-facebook-messenger"></i>
+                Nhắn tin
+            </button>
+        `;
+    } else if (status === 'REQUEST_RECEIVED') {
+        actionsContainer.innerHTML = `
+            <button class="profile-btn primary" onclick="respondToFriendRequest(${profileUserId}, true)">
+                <i class="fa-solid fa-user-plus"></i>
+                Chấp nhận lời mời
+            </button>
+            <button class="profile-btn" onclick="respondToFriendRequest(${profileUserId}, false)">
+                <i class="fa-solid fa-user-xmark"></i>
+                Từ chối
+            </button>
+        `;
+    } else {
+        actionsContainer.innerHTML = `
+            <button class="profile-btn primary" onclick="sendFriendRequest(${profileUserId})">
+                <i class="fa-solid fa-user-plus"></i>
+                Thêm bạn bè
+            </button>
+            <button class="profile-btn" onclick="sendMessage(${profileUserId})">
+                <i class="fa-brands fa-facebook-messenger"></i>
+                Nhắn tin
+            </button>
+        `;
+    }
+}
+
+async function sendFriendRequest(receiverId) {
+    try {
+        const response = await fetch('http://localhost:8080/api/friend-requests/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                senderId: currentUser.userId,
+                receiverId: receiverId
+            })
+        });
+        
+        if (response.ok) {
+            loadProfileActions(receiverId);
+        } else {
+            const error = await response.text();
+            alert(error);
+        }
+    } catch (error) {
+        console.error('Error sending friend request:', error);
+        alert('Lỗi khi gửi lời mời kết bạn');
+    }
+}
+
+async function cancelFriendRequest(receiverId) {
+    try {
+        // First get the request ID
+        const response = await fetch(`http://localhost:8080/api/friend-requests/sent/${currentUser.userId}`);
+        const requests = await response.json();
+        
+        const request = requests.find(r => r.receiverId === receiverId);
+        if (!request) return;
+        
+        const cancelResponse = await fetch(`http://localhost:8080/api/friend-requests/${request.id}/cancel`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: currentUser.userId })
+        });
+        
+        if (cancelResponse.ok) {
+            loadProfileActions(receiverId);
+        }
+    } catch (error) {
+        console.error('Error canceling friend request:', error);
+    }
+}
+
+async function respondToFriendRequest(senderId, accept) {
+    try {
+        // Get the request ID
+        const response = await fetch(`http://localhost:8080/api/friend-requests/received/${currentUser.userId}`);
+        const requests = await response.json();
+        
+        const request = requests.find(r => r.senderId === senderId);
+        if (!request) return;
+        
+        const endpoint = accept ? 'accept' : 'reject';
+        const respondResponse = await fetch(`http://localhost:8080/api/friend-requests/${request.id}/${endpoint}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: currentUser.userId })
+        });
+        
+        if (respondResponse.ok) {
+            loadProfileActions(senderId);
+        }
+    } catch (error) {
+        console.error('Error responding to friend request:', error);
+    }
+}
+
+function sendMessage(userId) {
+    // Redirect to messages page
+    window.location.href = `/html/messages.html?userId=${userId}`;
+}
+
+function toggleFriendsMenu(event, userId) {
+    event.stopPropagation();
+    const menu = document.getElementById('friendsMenu');
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+async function unfriend(friendId) {
+    if (!confirm('Bạn có chắc muốn hủy kết bạn?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('http://localhost:8080/api/friend-requests/unfriend', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userId1: currentUser.userId,
+                userId2: friendId
+            })
+        });
+        
+        if (response.ok) {
+            // Hide menu
+            const menu = document.getElementById('friendsMenu');
+            if (menu) menu.style.display = 'none';
+            
+            // Reload profile actions
+            loadProfileActions(friendId);
+        } else {
+            const error = await response.text();
+            alert(error);
+        }
+    } catch (error) {
+        console.error('Error unfriending:', error);
+        alert('Lỗi khi hủy kết bạn');
+    }
+}
+
+// Close friends menu when clicking outside
+document.addEventListener('click', (e) => {
+    const friendsMenu = document.getElementById('friendsMenu');
+    const friendsMenuBtn = document.getElementById('friendsMenuBtn');
+    
+    if (friendsMenu && friendsMenuBtn && 
+        !friendsMenu.contains(e.target) && 
+        !friendsMenuBtn.contains(e.target)) {
+        friendsMenu.style.display = 'none';
+    }
+});
 
 // Close modals when clicking outside
 document.querySelectorAll('.modal').forEach(modal => {

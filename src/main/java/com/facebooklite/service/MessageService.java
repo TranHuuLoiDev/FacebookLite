@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class MessageService {
@@ -22,9 +21,10 @@ public class MessageService {
     
     @Transactional
     public Message sendMessage(Long senderId, Long receiverId, String content) {
-        User sender = userRepository.findById(senderId)
+        // Verify users exist
+        userRepository.findById(senderId)
             .orElseThrow(() -> new RuntimeException("Sender not found"));
-        User receiver = userRepository.findById(receiverId)
+        userRepository.findById(receiverId)
             .orElseThrow(() -> new RuntimeException("Receiver not found"));
         
         Message message = new Message(content, senderId, receiverId);
@@ -33,9 +33,10 @@ public class MessageService {
     
     @Transactional
     public Message sendMessageWithImage(Long senderId, Long receiverId, String content, String imageUrl) {
-        User sender = userRepository.findById(senderId)
+        // Verify users exist
+        userRepository.findById(senderId)
             .orElseThrow(() -> new RuntimeException("Sender not found"));
-        User receiver = userRepository.findById(receiverId)
+        userRepository.findById(receiverId)
             .orElseThrow(() -> new RuntimeException("Receiver not found"));
         
         if ((content == null || content.trim().isEmpty()) && (imageUrl == null || imageUrl.trim().isEmpty())) {

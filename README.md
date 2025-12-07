@@ -6,30 +6,37 @@
 
 ```
 FacebookLite/
+├── .editorconfig
+├── .gitignore
+├── pom.xml
+├── README.md
+├── database/
+│   └── facebook_lite_schema.sql   # Database schema
 ├── src/
 │   ├── main/
 │   │   ├── java/com/facebooklite/
-│   │   │   ├── controller/        # Controllers - xử lý HTTP requests
-│   │   │   ├── service/           # Business logic layer
-│   │   │   ├── repository/        # Data access layer (JPA)
-│   │   │   ├── model/             # Entity models
-│   │   │   ├── dto/               # Data Transfer Objects
 │   │   │   ├── config/            # Configuration classes
-│   │   │   ├── security/          # Security & Authentication
+│   │   │   ├── controller/        # Controllers - xử lý HTTP requests
+│   │   │   ├── dto/               # Data Transfer Objects
 │   │   │   ├── exception/         # Exception handling
+│   │   │   ├── model/             # Entity models
+│   │   │   ├── repository/        # Data access layer (JPA)
+│   │   │   ├── security/          # Security & Authentication
+│   │   │   ├── service/           # Business logic layer
 │   │   │   ├── util/              # Utility classes
 │   │   │   └── FacebookLiteApplication.java
 │   │   └── resources/
 │   │       ├── static/            # Static resources
-│   │       │   ├── css/
-│   │       │   ├── js/
-│   │       │   └── images/
-│   │       ├── templates/         # Thymeleaf templates
+│   │       │   ├── css/           # Stylesheet files
+│   │       │   ├── html/          # HTML pages
+│   │       │   ├── images/        # Image assets
+│   │       │   ├── js/            # JavaScript files
+│   │       │   └── uploads/       # User uploaded files
+│   │       ├── templates/         # Thymeleaf templates (empty)
 │   │       └── application.properties
 │   └── test/
 │       └── java/com/facebooklite/ # Unit tests
-├── pom.xml
-└── README.md
+└── target/                        # Build output
 ```
 
 ## Công nghệ sử dụng
@@ -50,8 +57,7 @@ FacebookLite/
 3. Trần Lâm Nhật Tường
 4. Phan Khải Điền
 
-## Công nghệ sử dụng
-- Springboot
+## Ngôn ngữ sử dụng
 - Java
 - Javascript
 - HTML
@@ -95,18 +101,3 @@ mvn spring-boot:run
 ```
 
 Ứng dụng sẽ chạy tại: http://localhost:8080
-
-## API Endpoints (Dự kiến)
-
-- `POST /api/auth/register` - Đăng ký
-- `POST /api/auth/login` - Đăng nhập
-- `GET /api/posts` - Lấy danh sách bài viết
-- `POST /api/posts` - Tạo bài viết mới
-- `POST /api/posts/{id}/like` - Like bài viết
-- `POST /api/posts/{id}/comment` - Comment bài viết
-- `GET /api/users/{id}` - Xem profile
-- `POST /api/friends/request` - Gửi lời mời kết bạn
-
-## License
-
-MIT License

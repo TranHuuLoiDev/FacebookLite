@@ -16,25 +16,41 @@
         <div class="header-content">
             <div class="header-left">
                 <a href="/html/home.html" class="logo">f</a>
-                <div class="search-box">
+                <div class="search-box" style="position: relative;">
                     <span><i class="fa-solid fa-magnifying-glass"></i></span>
-                    <input type="text" placeholder="Tìm kiếm trên Facebook">
+                    <input type="text" id="globalSearch" placeholder="Tìm kiếm trên Facebook" autocomplete="off">
+                    <div id="searchResults" class="search-results-dropdown" style="display: none;">
+                        <div class="search-results-content"></div>
+                    </div>
                 </div>
             </div>
             
             <div class="header-center">
-                <div class="nav-icon active">🏠</div>
-                <div class="nav-icon">👥</div>
-                <div class="nav-icon">📺</div>
-                <div class="nav-icon">🏪</div>
-                <div class="nav-icon">🎮</div>
+                <div class="nav-icon active" title="Trang chủ">
+                    <i class="fa-solid fa-house"></i>
+                </div>
+                <div class="nav-icon" title="Bạn bè">
+                    <i class="fa-solid fa-user-group"></i>
+                </div>
+                <div class="nav-icon" title="Video">
+                    <i class="fa-solid fa-tv"></i>
+                </div>
+                <div class="nav-icon" title="Marketplace">
+                    <i class="fa-solid fa-store"></i>
+                </div>
+                <div class="nav-icon" title="Gaming">
+                    <i class="fa-solid fa-gamepad"></i>
+                </div>
             </div>
             
             <div class="header-right">
-                <div class="icon-button"><i class="fa-solid fa-plus"></i></div>
                 <div class="icon-button" id="messengerBtn" onclick="toggleMessengerDropdown()" style="cursor: pointer; position: relative;">
                     <i class="fa-regular fa-message"></i>
                     <span class="notification-badge" id="messengerBadge" style="display: none;">0</span>
+                </div>
+                <div class="icon-button" id="friendRequestBtn" onclick="toggleFriendRequestDropdown()" style="cursor: pointer; position: relative;">
+                    <i class="fa-solid fa-user-group"></i>
+                    <span class="notification-badge" id="friendRequestBadge" style="display: none;">0</span>
                 </div>
                 <div class="icon-button"><i class="fa-regular fa-bell"></i></div>
                 
@@ -55,6 +71,19 @@
                     </div>
                     <div class="messenger-dropdown-footer">
                         <a href="/html/messages.html" class="messenger-view-all">Xem tất cả trong Messenger</a>
+                    </div>
+                </div>
+                
+                <!-- Friend Request Dropdown -->
+                <div id="friendRequestDropdown" class="messenger-dropdown">
+                    <div class="messenger-dropdown-header">
+                        <h3>Lời mời kết bạn</h3>
+                    </div>
+                    <div class="messenger-dropdown-list" id="friendRequestsList">
+                        <div class="messenger-loading">Đang tải...</div>
+                    </div>
+                    <div class="messenger-dropdown-footer">
+                        <a href="#" class="messenger-view-all">Xem tất cả</a>
                     </div>
                 </div>
                 
@@ -241,6 +270,22 @@
                 </button>
             </div>
             <button class="modal-button" id="submitPost">Đăng</button>
+        </div>
+    </div>
+
+    <!-- Find Friends Modal -->
+    <div class="modal" id="findFriendsModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <div class="modal-title">Tìm bạn bè</div>
+                <div class="modal-close" onclick="closeFindFriendsModal()">×</div>
+            </div>
+            <div style="padding: 20px;">
+                <input type="text" id="searchFriends" placeholder="Tìm kiếm..." style="width: 100%; padding: 12px; border: none; background: #3a3b3c; color: #e4e6eb; border-radius: 8px; margin-bottom: 16px;">
+                <div id="friendSuggestionsList" style="max-height: 400px; overflow-y: auto;">
+                    <div style="text-align: center; padding: 20px; color: #b0b3b8;">Đang tải...</div>
+                </div>
+            </div>
         </div>
     </div>
 
