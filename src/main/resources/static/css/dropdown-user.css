@@ -1,0 +1,112 @@
+/* User Dropdown Menu Styles */
+
+.user-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background-color: #242526;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.3);
+    min-width: 360px;
+    display: none;
+    z-index: 1000;
+    padding: 8px;
+}
+
+.user-dropdown.active {
+    display: block;
+}
+
+.dropdown-header {
+    padding: 12px;
+    border-bottom: 1px solid #3e4042;
+    margin-bottom: 4px;
+}
+
+.dropdown-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.dropdown-user:hover {
+    background-color: #3a3b3c;
+}
+
+.dropdown-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 24px;
+}
+
+.dropdown-user-info {
+    flex: 1;
+}
+
+.dropdown-username {
+    font-weight: 600;
+    font-size: 17px;
+    color: #e4e6eb;
+}
+
+.dropdown-see-profile {
+    font-size: 13px;
+    color: #2e89ff;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background-color: #3e4042;
+    margin: 4px 0;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    color: #e4e6eb;
+}
+
+.dropdown-item:hover {
+    background-color: #3a3b3c;
+}
+
+.dropdown-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #3a3b3c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.dropdown-text {
+    flex: 1;
+}
+
+.dropdown-title {
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.dropdown-subtitle {
+    font-size: 12px;
+    color: #b0b3b8;
+    margin-top: 2px;
+}

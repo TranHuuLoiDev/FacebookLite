@@ -1,0 +1,247 @@
+/* Header Styles - Navigation bar and search */
+
+.header {
+    background-color: #242526;
+    border-bottom: 1px solid #3e4042;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    padding: 8px 16px;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.logo {
+    color: #2e89ff;
+    font-size: 40px;
+    font-weight: bold;
+    text-decoration: none;
+    font-family: 'Klavika', sans-serif;
+}
+
+.search-box {
+    background-color: #3a3b3c;
+    border-radius: 50px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    width: 240px;
+}
+
+.search-box input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #e4e6eb;
+    margin-left: 8px;
+    width: 100%;
+}
+
+.search-box input::placeholder {
+    color: #b0b3b8;
+}
+
+.search-results-dropdown {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 350px;
+    max-height: 500px;
+    background: #242526;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.search-results-dropdown::-webkit-scrollbar {
+    width: 8px;
+}
+
+.search-results-dropdown::-webkit-scrollbar-track {
+    background: #3a3b3c;
+    border-radius: 4px;
+}
+
+.search-results-dropdown::-webkit-scrollbar-thumb {
+    background: #5a5b5c;
+    border-radius: 4px;
+}
+
+.search-results-content {
+    padding: 8px;
+}
+
+.search-section-title {
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #b0b3b8;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.search-result-item:hover {
+    background: #3a3b3c;
+}
+
+.search-result-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.search-result-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.search-result-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.search-result-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #e4e6eb;
+    margin-bottom: 2px;
+}
+
+.search-result-subtitle {
+    font-size: 13px;
+    color: #b0b3b8;
+}
+
+.search-no-results {
+    padding: 40px 20px;
+    text-align: center;
+    color: #b0b3b8;
+}
+
+.search-loading {
+    padding: 20px;
+    text-align: center;
+    color: #b0b3b8;
+}
+
+.header-center {
+    display: flex;
+    gap: 8px;
+    flex: 1;
+    justify-content: center;
+}
+
+.nav-icon {
+    padding: 12px 50px;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #b0b3b8;
+    font-size: 20px;
+    transition: all 0.2s;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-icon:hover {
+    background-color: #3a3b3c;
+}
+
+.nav-icon.active {
+    color: #2e89ff;
+    border-bottom: 3px solid #2e89ff;
+}
+
+.nav-icon i {
+    font-size: 20px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.icon-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #3a3b3c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 20px;
+    transition: background-color 0.2s;
+}
+
+.icon-button:hover {
+    background-color: #4e4f50;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    cursor: pointer;
+    position: relative;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 20px;
+    height: 20px;
+    background: #e41e3f;
+    color: white;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 0 6px;
+    border: 2px solid #242526;
+}

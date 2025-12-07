@@ -1,0 +1,176 @@
+/* Sidebar - Right sidebar contacts */
+
+.right-sidebar {
+    width: 280px;
+    position: sticky;
+    top: 70px;
+    height: calc(100vh - 86px);
+    overflow-y: auto;
+}
+
+.sidebar-section {
+    margin-bottom: 16px;
+}
+
+.sidebar-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: #b0b3b8;
+    margin-bottom: 12px;
+    padding: 0 8px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    position: relative;
+}
+
+.contact-item:hover {
+    background-color: #3a3b3c;
+}
+
+.contact-item:hover .contact-actions {
+    display: flex;
+}
+
+.contact-actions {
+    display: none;
+    position: absolute;
+    right: 8px;
+    gap: 4px;
+}
+
+.contact-action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #4e4f50;
+    border: none;
+    color: #e4e6eb;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.contact-action-btn:hover {
+    background: #5a5b5c;
+}
+
+.contact-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.online-status {
+    width: 12px;
+    height: 12px;
+    background-color: #31a24c;
+    border: 2px solid #242526;
+    border-radius: 50%;
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+}
+
+/* Friend Suggestion Styles */
+.friend-suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #3a3b3c;
+    margin-bottom: 8px;
+}
+
+.friend-suggestion-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.friend-suggestion-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.friend-suggestion-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.friend-suggestion-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #e4e6eb;
+    margin-bottom: 4px;
+    cursor: pointer;
+}
+
+.friend-suggestion-name:hover {
+    text-decoration: underline;
+}
+
+.friend-suggestion-mutual {
+    font-size: 13px;
+    color: #b0b3b8;
+}
+
+.friend-suggestion-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.friend-suggestion-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.friend-suggestion-btn-add {
+    background: #2e89ff;
+    color: white;
+}
+
+.friend-suggestion-btn-add:hover {
+    background: #1877f2;
+}
+
+.friend-suggestion-btn-remove {
+    background: #4e4f50;
+    color: #e4e6eb;
+}
+
+.friend-suggestion-btn-remove:hover {
+    background: #5a5b5c;
+}

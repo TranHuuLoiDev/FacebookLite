@@ -1,0 +1,43 @@
+/* Responsive Styles */
+
+@media (max-width: 1100px) {
+    .right-sidebar {
+        display: none;
+    }
+}
+
+@media (max-width: 900px) {
+    .left-sidebar {
+        display: none;
+    }
+    
+    .header-center {
+        display: none;
+    }
+    
+    .search-box {
+        width: 180px;
+    }
+}
+
+@media (max-width: 600px) {
+    .header-left {
+        flex: 0;
+    }
+    
+    .search-box {
+        display: none;
+    }
+    
+    .header-right {
+        flex: 0;
+    }
+    
+    .main-content {
+        padding: 8px;
+    }
+    
+    .post-card {
+        padding: 12px;
+    }
+}
