@@ -1,21 +1,18 @@
-let currentUser = null;
+// Home Page - Main Initialization
+// This file coordinates all modules and initializes the page
 
-// Utility function to escape HTML and prevent XSS
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
+// Check authentication and initialize
+currentUser = checkAuth();
 
-// Check authentication
-const userStr = localStorage.getItem('user');
-if (!userStr) {
-    window.location.href = '/html/login.html';
-} else {
-    currentUser = JSON.parse(userStr);
-    updateUserInfo();
+if (currentUser) {
+    // Initialize user interface
+    initUserInfo();
+    
+    // Load initial data
     loadPosts();
     loadContacts();
+    loadAllUsers();
+    loadFriendRequestCount();
 }
 
 function updateUserInfo() {
