@@ -115,6 +115,8 @@ async function loadPosts() {
 function createPostCard(post) {
     const card = document.createElement('div');
     card.className = 'post-card';
+    card.setAttribute('data-post-id', post.id);
+    card.id = `post-${post.id}`;
     
     const initial = getUserInitial(post.user);
     const authorName = post.user ? getUserFullName(post.user) : 'Unknown';
@@ -212,6 +214,11 @@ async function toggleLike(postId) {
             const response2 = await fetch(`http://localhost:8080/api/posts/${postId}`);
             const post = await response2.json();
             likeCountSpan.innerHTML = `<i class="fa-regular fa-thumbs-up"></i> ${post.likeCount || 0}`;
+            
+            // Update notification badge if notifications.js is loaded
+            if (typeof updateNotificationBadge === 'function') {
+                updateNotificationBadge();
+            }
         }
     } catch (error) {
         console.error('Error toggling like:', error);
@@ -354,6 +361,11 @@ async function postComment(postId) {
             const post = await response2.json();
             const commentCountSpan = document.getElementById(`comment-count-${postId}`);
             commentCountSpan.textContent = `${post.commentCount || 0} bình luận · ${post.shareCount || 0} lượt chia sẻ`;
+            
+            // Update notification badge if notifications.js is loaded
+            if (typeof updateNotificationBadge === 'function') {
+                updateNotificationBadge();
+            }
         } else {
             const data = await response.json();
             alert(data.message || 'Không thể đăng bình luận');

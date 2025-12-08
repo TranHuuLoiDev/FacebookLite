@@ -21,6 +21,9 @@ public class Notification {
     @Column(name = "user_id", nullable = false)
     private Long userId;
     
+    @Column(name = "actor_id", nullable = false)
+    private Long actorId; // Người thực hiện hành động
+    
     @Column(nullable = false)
     private String type; // like, comment, friend_request, message
     
@@ -65,6 +68,14 @@ public class Notification {
     
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+    
+    public Long getActorId() {
+        return actorId;
+    }
+    
+    public void setActorId(Long actorId) {
+        this.actorId = actorId;
     }
     
     public String getType() {

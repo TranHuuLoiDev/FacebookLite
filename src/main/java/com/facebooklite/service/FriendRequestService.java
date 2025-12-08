@@ -29,6 +29,9 @@ public class FriendRequestService {
     @Autowired
     private UserRepository userRepository;
     
+    @Autowired
+    private NotificationService notificationService;
+    
     // Send friend request
     @Transactional
     public FriendRequestDTO sendFriendRequest(Long senderId, Long receiverId) {
@@ -53,6 +56,15 @@ public class FriendRequestService {
         
         FriendRequest request = new FriendRequest(sender, receiver);
         request = friendRequestRepository.save(request);
+        
+        // Create notification for receiver
+        notificationService.createNotification(
+            receiverId,
+            senderId,
+            "friend_request",
+            sender.getFirstName() + " " + sender.getLastName() + " đã gửi lời mời kết bạn",
+            request.getId()
+        );
         
         return convertToDTO(request);
     }
@@ -85,6 +97,15 @@ public class FriendRequestService {
         friendship2.setUserId(request.getReceiver().getId());
         friendship2.setFriendId(request.getSender().getId());
         friendshipRepository.save(friendship2);
+        
+        // Create notification for sender
+        notificationService.createNotification(
+            request.getSender().getId(),
+            request.getReceiver().getId(),
+            "friend_accept",
+            request.getReceiver().getFirstName() + " " + request.getReceiver().getLastName() + " đã chấp nhận lời mời kết bạn",
+            request.getId()
+        );
     }
     
     // Reject friend request

@@ -25,6 +25,9 @@ public class LikeService {
     @Autowired
     private UserRepository userRepository;
     
+    @Autowired
+    private NotificationService notificationService;
+    
     @Transactional
     public Like toggleLike(Long userId, Long postId) {
         User user = userRepository.findById(userId)
@@ -40,8 +43,8 @@ public class LikeService {
             likeRepository.delete(existingLike.get());
             
             // Update post like count
-            int currentCount = post.getLikeCount() != null ? post.getLikeCount() : 0;
-            post.setLikeCount(Math.max(0, currentCount - 1));
+            Integer currentCount = post.getLikeCount();
+            post.setLikeCount(currentCount != null ? Math.max(0, currentCount - 1) : 0);
             postRepository.save(post);
             
             return null; // Return null to indicate unlike
@@ -51,9 +54,18 @@ public class LikeService {
             Like savedLike = likeRepository.save(like);
             
             // Update post like count
-            int currentCount = post.getLikeCount() != null ? post.getLikeCount() : 0;
-            post.setLikeCount(currentCount + 1);
+            Integer currentCount = post.getLikeCount();
+            post.setLikeCount(currentCount != null ? currentCount + 1 : 1);
             postRepository.save(post);
+            
+            // Create notification for post owner
+            notificationService.createNotification(
+                post.getUser().getId(),
+                userId,
+                "like",
+                user.getFirstName() + " " + user.getLastName() + " đã thích bài viết của bạn",
+                postId
+            );
             
             return savedLike;
         }

@@ -24,6 +24,9 @@ public class CommentService {
     @Autowired
     private UserRepository userRepository;
     
+    @Autowired
+    private NotificationService notificationService;
+    
     @Transactional
     public Comment createComment(Long userId, Long postId, String content) {
         User user = userRepository.findById(userId)
@@ -36,9 +39,19 @@ public class CommentService {
         Comment savedComment = commentRepository.save(comment);
         
         // Update post comment count
-        int currentCount = post.getCommentCount() != null ? post.getCommentCount() : 0;
-        post.setCommentCount(currentCount + 1);
+        Integer currentCount = post.getCommentCount();
+        post.setCommentCount(currentCount != null ? currentCount + 1 : 1);
         postRepository.save(post);
+        
+        // Create notification for post owner
+        notificationService.createNotification(
+            post.getUser().getId(),
+            userId,
+            "comment",
+            user.getFirstName() + " " + user.getLastName() + " đã bình luận: " + 
+            (content.length() > 50 ? content.substring(0, 50) + "..." : content),
+            postId
+        );
         
         return savedComment;
     }
@@ -66,8 +79,8 @@ public class CommentService {
         commentRepository.delete(comment);
         
         // Update post comment count
-        int currentCount = post.getCommentCount() != null ? post.getCommentCount() : 0;
-        post.setCommentCount(Math.max(0, currentCount - 1));
+        Integer currentCount = post.getCommentCount();
+        post.setCommentCount(currentCount != null ? Math.max(0, currentCount - 1) : 0);
         postRepository.save(post);
     }
 }

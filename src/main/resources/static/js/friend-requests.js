@@ -113,6 +113,11 @@ async function acceptFriendRequest(requestId) {
         if (response.ok) {
             loadFriendRequests();
             loadContacts(); // Reload contacts to show new friend
+            
+            // Update notification badge if notifications.js is loaded
+            if (typeof updateNotificationBadge === 'function') {
+                updateNotificationBadge();
+            }
         } else {
             const error = await response.text();
             alert(error);

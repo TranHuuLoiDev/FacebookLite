@@ -56,6 +56,7 @@ function updateAvatar(elementId, profilePicture, initial) {
 
 // Get user's initial from name
 function getUserInitial(user) {
+    if (!user) return 'U';
     if (user.firstName) {
         return user.firstName.charAt(0).toUpperCase();
     }
@@ -67,16 +68,32 @@ function getUserInitial(user) {
 
 // Get user's full name
 function getUserFullName(user) {
-    return `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username;
+    if (!user) return 'Unknown';
+    return `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || 'Unknown';
 }
 
-// Create avatar HTML
-function createAvatarHtml(user) {
-    const initial = getUserInitial(user);
+// Create avatar HTML - supports both single user object or separate parameters
+function createAvatarHtml(profilePictureOrUser, firstName, lastName, size) {
+    let user, profilePicture, userSize;
     
-    if (user.profilePicture && user.profilePicture.trim() !== '') {
-        return `<img src="${user.profilePicture}" alt="${getUserFullName(user)}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+    // Check if first parameter is a user object
+    if (typeof profilePictureOrUser === 'object' && profilePictureOrUser !== null) {
+        user = profilePictureOrUser;
+        profilePicture = user.profilePicture;
+        userSize = firstName || 40; // second param becomes size
+    } else {
+        // Separate parameters
+        profilePicture = profilePictureOrUser;
+        user = { firstName, lastName, profilePicture };
+        userSize = size || 40;
     }
     
-    return initial;
+    const initial = getUserInitial(user);
+    const fullName = getUserFullName(user);
+    
+    if (profilePicture && profilePicture.trim() !== '') {
+        return `<img src="${profilePicture}" alt="${fullName}" class="notification-avatar" style="width: ${userSize}px; height: ${userSize}px; object-fit: cover; border-radius: 50%;">`;
+    }
+    
+    return `<div class="notification-avatar default-avatar" style="width: ${userSize}px; height: ${userSize}px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 600; font-size: ${userSize / 2.8}px;">${initial}</div>`;
 }
